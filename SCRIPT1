@@ -1,4 +1,3 @@
--- Pet Shop UI Script with Two Stages
 local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Helper to clear UI
@@ -9,64 +8,134 @@ local function clearUI(name)
 	end
 end
 
--- Second UI function
-local function showSecondPetShop()
-	clearUI("PetShopUI1")
-
-	local petGui = Instance.new("ScreenGui")
-	petGui.Name = "PetShopUI2"
-	petGui.ResetOnSpawn = false
-	petGui.Parent = playerGui
+-- Step 1: Notification - OLD SERVER FOUND
+local function showOldServerNotif()
+	local notifGui = Instance.new("ScreenGui")
+	notifGui.Name = "OldServerNotif"
+	notifGui.ResetOnSpawn = false
+	notifGui.Parent = playerGui
 
 	local frame = Instance.new("Frame")
-	frame.Size = UDim2.new(0.45, 0, 0.55, 0)
-	frame.Position = UDim2.new(0.275, 0, 0.225, 0)
-	frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-	frame.BorderSizePixel = 2
-	frame.BorderColor3 = Color3.fromRGB(0, 200, 255)
-	frame.Parent = petGui
+	frame.Size = UDim2.new(0.25, 0, 0.12, 0)
+	frame.Position = UDim2.new(0.7, 0, 0.85, 0)
+	frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	frame.BackgroundTransparency = 0.2
+	frame.BorderSizePixel = 0
+	frame.Parent = notifGui
 
 	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(1, 0, 0.15, 0)
+	title.Size = UDim2.new(1, 0, 0.5, 0)
 	title.Position = UDim2.new(0, 0, 0, 0)
 	title.BackgroundTransparency = 1
-	title.Text = "NAGARA Pet Storage"
+	title.Text = "OLD SERVER FOUND"
 	title.TextScaled = true
 	title.Font = Enum.Font.GothamBold
-	title.TextColor3 = Color3.fromRGB(0, 200, 255)
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
 	title.Parent = frame
 
 	local subtitle = Instance.new("TextLabel")
-	subtitle.Size = UDim2.new(1, 0, 0.1, 0)
-	subtitle.Position = UDim2.new(0, 0, 0.15, 0)
+	subtitle.Size = UDim2.new(1, 0, 0.5, 0)
+	subtitle.Position = UDim2.new(0, 0, 0.5, 0)
 	subtitle.BackgroundTransparency = 1
-	subtitle.Text = "Upgraded Pets"
+	subtitle.Text = "Teleporting to old server"
 	subtitle.TextScaled = true
 	subtitle.Font = Enum.Font.Gotham
-	subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+	subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
 	subtitle.Parent = frame
 
-	local pets = {"Phoenix", "Golden Raccoon", "Huge Dragonfly"}
-	for i, petName in ipairs(pets) do
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -20, 0.1, 0)
-		label.Position = UDim2.new(0, 10, 0.25 + (i-1)*0.12, 0)
-		label.BackgroundTransparency = 1
-		label.Text = petName
-		label.TextScaled = true
-		label.Font = Enum.Font.Gotham
-		label.TextColor3 = Color3.fromRGB(200, 200, 255)
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.Parent = frame
-	end
+	task.delay(2, function()
+		notifGui:Destroy()
+	end)
 end
 
--- First UI function
-local function showFirstPetShop()
-	clearUI("PetShopUI2")
+-- Step 3: Loading UI - Waiting for bots
+local function showLoadingBotsUI()
+	local loadingGui = Instance.new("ScreenGui")
+	loadingGui.Name = "LoadingBotsUI"
+	loadingGui.ResetOnSpawn = false
+	loadingGui.Parent = playerGui
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0.4, 0, 0.2, 0)
+	frame.Position = UDim2.new(0.3, 0, 0.4, 0)
+	frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+	frame.BorderSizePixel = 0
+	frame.Parent = loadingGui
+
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, 0, 0.5, 0)
+	title.Position = UDim2.new(0, 0, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Text = "Waiting for bots to join"
+	title.TextScaled = true
+	title.Font = Enum.Font.GothamBold
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.Parent = frame
+
+	local loading = Instance.new("TextLabel")
+	loading.Size = UDim2.new(1, 0, 0.5, 0)
+	loading.Position = UDim2.new(0, 0, 0.5, 0)
+	loading.BackgroundTransparency = 1
+	loading.Text = "Loading"
+	loading.TextScaled = true
+	loading.Font = Enum.Font.Gotham
+	loading.TextColor3 = Color3.fromRGB(255, 255, 255)
+	loading.Parent = frame
+
+	-- Animate loading text
+	local dots = 0
+	local running = true
+	task.spawn(function()
+		while running do
+			dots = (dots + 1) % 4
+			loading.Text = "Loading" .. string.rep(".", dots)
+			wait(0.4)
+		end
+	end)
+
+	task.delay(2, function()
+		running = false
+		loadingGui:Destroy()
+		showBotJoinedNotif()
+	end)
+end
+
+-- Step 4: Final Notification - BOT JOINED
+function showBotJoinedNotif()
+	local notifGui = Instance.new("ScreenGui")
+	notifGui.Name = "BotJoinedNotif"
+	notifGui.ResetOnSpawn = false
+	notifGui.Parent = playerGui
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0.25, 0, 0.1, 0)
+	frame.Position = UDim2.new(0.7, 0, 0.85, 0)
+	frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	frame.BackgroundTransparency = 0.2
+	frame.BorderSizePixel = 0
+	frame.Parent = notifGui
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.Position = UDim2.new(0, 0, 0, 0)
+	label.BackgroundTransparency = 1
+	label.Text = "BOT JOINED"
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.Parent = frame
+
+	task.delay(2.5, function()
+		notifGui:Destroy()
+	end)
+end
+
+-- Step 0: Show Main Pet Shop UI
+local function showPetShop()
+	clearUI("PetShopUI")
 
 	local petGui = Instance.new("ScreenGui")
-	petGui.Name = "PetShopUI1"
+	petGui.Name = "PetShopUI"
 	petGui.ResetOnSpawn = false
 	petGui.Parent = playerGui
 
@@ -122,11 +191,14 @@ local function showFirstPetShop()
 	buyButton.Font = Enum.Font.GothamBold
 	buyButton.Parent = shopFrame
 
-	-- Button behavior: show second UI
 	buyButton.MouseButton1Click:Connect(function()
-		showSecondPetShop()
+		showOldServerNotif()
+		task.delay(2, function()
+			clearUI("PetShopUI")
+			showLoadingBotsUI()
+		end)
 	end)
 end
 
--- Call the first pet shop UI
-showFirstPetShop()
+-- 🔃 Start
+showPetShop()
